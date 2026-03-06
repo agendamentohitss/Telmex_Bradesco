@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Telmex Bradesco – Projeto 1209/26 - PRO - BRADESCO-SDW_MIGR_OI</title>
+  <style>
+    :root{
+      --brand:#95302B; --brand-dark:#7a2723;
+      --bg:#f7f7f9; --card:#ffffff; --text:#222; --muted:#6b7280; --border:#e5e7eb;
+      --ok:#059669; --warn:#d97706; --err:#b00020; --chip:#eef2ff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
+
+    /* Header */
+    header{background:#fff;border-bottom:1px solid var(--border)}
+    .header-inner{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .logos{display:flex;align-items:center;gap:16px}
+    .logos img{height:36px;object-fit:contain;display:block}
+    .titlebar{background:var(--brand);color:#fff}
+    .titlebar .inner{max-width:1200px;margin:0 auto;padding:16px}
+    .titlebar h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px}
+
+    /* Top bar */
+    .uploadbar{background:#fff;border-bottom:1px solid var(--border)}
+    .uploadbar .inner{max-width:1200px;margin:0 auto;padding:10px 16px;display:grid;gap:10px}
+    .btn{
+      display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:1px solid var(--border);
+      background:#fff;cursor:pointer;transition:.2s transform,.2s background;user-select:none;font-weight:600;color:#111
+    }
+    .btn:hover{background:#f9fafb}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .mini{font-size:12px;color:#555}
+    .file-mini input[type="file"]{display:none}
+    .file-name{font-size:12px;color:var(--muted);margin-left:6px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{background:var(--chip);color:#1f2937;border:1px solid #e5e7eb;border-radius:999px;padding:4px 10px;font-size:12px}
+
+    /* Main */
+    main{max-width:1200px;margin:24px auto;padding:0 16px}
+    .grid{display:grid;gap:16px}
+    @media(min-width:992px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.06)}
+    .card .hd{padding:14px 16px;border-bottom:1px solid var(--border);font-weight:700}
+    .card .bd{padding:16px}
+    label{display:block;font-size:14px;color:#111;margin:8px 0 6px}
+    input[type="text"], input[type="datetime-local"], textarea, select{
+      width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;outline:none;transition:.2s border-color
+    }
+    input:focus, textarea:focus, select:focus{border-color:var(--brand)}
+    .readonly{background:#fafafa}
+    .row{display:grid;gap:12px}
+    @media(min-width:640px){ .row.cols-2{grid-template-columns:1fr 1fr} .row.cols-3{grid-template-columns:1fr 1fr 1fr}}
+    .muted{color:var(--muted);font-size:12px}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+    .flag-ok{outline:2px solid rgba(5,150,105,.35)}
+    .flag-warn{outline:2px solid rgba(217,119,6,.35)}
+    .flag-err{outline:2px solid rgba(176,0,32,.35)}
+
+    /* Footer */
+    footer{margin-top:28px;background:var(--brand);color:#fff}
+    footer .inner{max-width:1200px;margin:0 auto;padding:14px 16px;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+    /* Toast */
+    #toast{
+      position:fixed;right:16px;bottom:16px;background:#111;color:#fff;
+      padding:10px 12px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);
+      font-size:13px;z-index:9999;opacity:0;pointer-events:none;transition:opacity .25s
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logos">
+        <img src="https://globalhitss.com/br/wp-content/uploads/2025/01/logo-hitss-red.png" alt="HITSS">
+        <img src="https://claro.sdetelecom.com.br/wp-content/uploads/2023/05/claro-empresas-logo-01-300x146.png" alt="Claro Empresas">
+      </div>
+      <div class="muted">Portal Interno</div>
+    </div>
+  </header>
+
+  <div class="titlebar">
+    <div class="inner">
+      <h1>Telmex Bradesco – Projeto 1209/26 - PRO - BRADESCO-SDW_MIGR_OI</h1>
+    </div>
+  </div>
+
+  <!-- Topo: uploads + atalhos -->
+  <div class="uploadbar">
+    <div class="inner">
+      <div class="top-actions">
+        <!-- Atalhos (se quiser manter) -->
+        <button type="button" class="btn" id="btnAbrirBacklog">Abrir Backlog (CSV)</button>
+        <button type="button" class="btn" id="btnAbrirFinal">Abrir Finalizados (CSV)</button>
+
+        <!-- Uploads -->
+        <label class="file-mini">
+          <button type="button" class="btn primary" id="btnPickBacklog">Upload Backlog</button>
+          <input type="file" id="fileBacklog" accept=".csv">
+          <span class="file-name" id="nameBacklog">Nenhum arquivo</span>
+        </label>
+
+        <label class="file-mini">
+          <button type="button" class="btn primary" id="btnPickFinalizados">Upload Finalizados</button>
+          <input type="file" id="fileFinalizados" accept=".csv">
+          <span class="file-name" id="nameFinalizados">Nenhum arquivo</span>
+        </label>
+
+        <!-- Baixar modelos/resultados -->
+      </div>
+
+      <div class="chips" id="chipsInfo">
+        <span class="chip" id="chipBacklog">Backlog: 0 linhas</span>
+        <span class="chip" id="chipFinal">Finalizados: 0 linhas</span>
+        <span class="mini">Use os uploads para carregar os CSVs locais. Você também pode abrir as planilhas no SharePoint pelos botões.</span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="grid">
+      <!-- Formulário -->
+      <section class="card">
+        <div class="hd">Formulário</div>
+        <div class="bd">
+          <form id="formEsteira" onsubmit="return false;">
+            <div class="row cols-2">
+              <div>
+                <label for="dataHora">Data Hora</label>
+                <input type="datetime-local" id="dataHora">
+              </div>
+              <div>
+                <label for="circuitoEsteira">Circuito Esteira <span class="muted">(chave: cod_cir)</span></label>
+                <input type="text" id="circuitoEsteira" inputmode="numeric" pattern="[0-9]+" placeholder="Somente números" required>
+              </div>
+            </div>
+
+            <div class="row cols-2">
+              <div>
+                <label for="contatoAgendou">Contato Cliente que Agendou</label>
+                <input type="text" id="contatoAgendou" placeholder="Nome / Telefone / E-mail">
+              </div>
+              <div>
+                <label for="contatoValidara">Contato Cliente que Validará Atividade</label>
+                <input type="text" id="contatoValidara" placeholder="Nome / Telefone / E-mail">
+              </div>
+            </div>
+
+            <div class="row cols-2">
+              <div>
+                <label for="contatoLocal">Contato local (Nome / Tel)</label>
+                <input type="text" id="contatoLocal" placeholder="Nome / Telefone">
+              </div>
+              <div>
+                <label for="osModos">OS ModOS <span class="muted">(somente números)</span></label>
+                <input type="text" id="osModos" inputmode="numeric" pattern="[0-9]+" placeholder="Somente números">
+              </div>
+            </div>
+
+            <div class="row cols-2">
+              <div>
+                <label for="wf">WF <span class="muted">(somente números)</span></label>
+                <input type="text" id="wf" inputmode="numeric" pattern="[0-9]+" placeholder="Somente números">
+              </div>
+              <div>
+                <label for="projeto">Projeto</label>
+                <input type="text" id="projeto" class="readonly" value="1209/26 - PRO - BRADESCO-SDW_MIGR_OI" readonly>
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top:8px">
+              <button type="button" class="btn primary" id="btnProcessar" disabled>Processar</button>
+              <button type="button" class="btn" id="btnCopiarScript">Copiar Script</button>
+              <button type="reset"  class="btn" id="btnLimpar">Limpar</button>
+            </div>
+            <div class="mini" style="margin-top:6px">Carregue as duas bases (via upload) e informe o <b>Circuito Esteira</b>.</div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Derivados -->
+      <section class="card">
+        <div class="hd">Dados Derivados</div>
+        <div class="bd">
+          <div class="row cols-2">
+            <div>
+              <label for="designacaoEsteira">Designação Circuito Esteira</label>
+              <input type="text" id="designacaoEsteira" class="readonly" readonly>
+            </div>
+            <div>
+              <label for="dadosDependencia">Dados da dependência</label>
+              <input type="text" id="dadosDependencia" class="readonly" readonly>
+            </div>
+          </div>
+          <div class="row cols-2">
+            <div>
+              <label for="circuitoFinalizado">Circuito Finalizado</label>
+              <input type="text" id="circuitoFinalizado" class="readonly" readonly>
+            </div>
+            <div>
+              <label for="designacaoFinalizado">Designação Circuito Finalizado</label>
+              <input type="text" id="designacaoFinalizado" class="readonly" readonly>
+            </div>
+          </div>
+          <div class="row cols-2">
+            <div>
+              <label for="atividade">Atividade</label>
+              <input type="text" id="atividade" class="readonly" readonly>
+            </div>
+            <div>
+              <label for="observacao">Observação</label>
+              <textarea id="observacao" rows="8" placeholder="Preenchido automaticamente se o serviço no Backlog for BANDA LARGA MÓVEL (editável)."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="inner">
+      <div>Desenvolvido por William Vendimiatti</div>
+      <div>© <span id="year"></span> • Uso interno</div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* ===========================
+       Links de atalho (opcionais)
+       =========================== */
+    const LINKS = {
+      backlog: "https://hitssbr-my.sharepoint.com/personal/william_vendimiatti_globalhitss_com_br/Documents/PAGINA%201209%20Bradesco/BACKLOG.csv",
+      final:   "https://hitssbr-my.sharepoint.com/personal/william_vendimiatti_globalhitss_com_br/Documents/PAGINA%201209%20Bradesco/FINALIZADOS.csv"
+    };
+
+    /* ===========================
+       Estado & Configuração
+       =========================== */
+    const state = {
+      backlog: [],
+      finalizados: [],
+      config: {
+        chaveBacklog: ['cod_cir'],
+        campoDesignacao: ['designacao'],
+        campoDependencia: ['projeto_nome_dependencia_cliente'],
+        campoServico: ['servico'],
+
+        campoDependenciaFinalizados: ['projeto_nome_dependencia_cliente','nome_dependencia','dependencia','dep_nome'],
+        campoCodCirFinalizados: ['cod_cir'],
+        campoDesignacaoFinalizados: ['designacao'],
+
+        textoBLM:
+`Os links deverão ser instalados em racks 6U’s fixados na parede dentro da sala de equipamentos das Agências / PABs ou Departamentos do Bradesco. Como se trata de migração de operadora, o microtik da GO WI-FI já se encontra instalado. É mandatório (requisito obrigatório) que o link seja instalado no mesmo rack em que esteja instalado o microtik da GO WI-FI.
+Procedimento de VALIDAÇÃO/ACEITAÇÃO do BLM rede WIFI: Havendo sucesso nos testes do link móvel é necessário solicitar ao técnico que rode um speed teste para validar a velocidade do link móvel, e encaminhe para AT-LOCAL anexar no WF2 como evidência da velocidade de entrega. As mesma evidências devem ser enviadas para grupo de whatsapp centralizado para inserção no ticket modos web de coleta de evidências do FWA.
+Uma vez instalado o BLM dentro do rack do mikrotik, realizar o reset dos modem e AP (conforme procedimento enviado para AT-local) e acionar a GO WIFI para teste final de ATIVAÇÃO de SERVIÇO.`,
+
+        persistir: true
+      }
+    };
+
+    /* Utils DOM / Toast */
+    const $ = s => document.querySelector(s);
+    const byId = id => document.getElementById(id);
+    byId("year").textContent = new Date().getFullYear();
+
+    let toastTimer=null;
+    function toast(msg, ms=2000){
+      clearTimeout(toastTimer);
+      const el = byId('toast');
+      el.textContent = msg;
+      el.style.opacity='1';
+      toastTimer = setTimeout(()=>{ el.style.opacity='0'; }, ms);
+    }
+
+    /* Data/Hora default (arredondado p/ 5 min) */
+    (function setNow(){
+      const d = new Date(); d.setSeconds(0,0); d.setMinutes(d.getMinutes() - (d.getMinutes()%5));
+      byId("dataHora").value = d.toISOString().slice(0,16);
+    })();
+
+    /* Persistência */
+    const LS_KEY = "bradesco_esteira_finalizados_csvonly_v1";
+    function saveLS(){
+      if(!state.config.persistir) return;
+      const payload = {
+        backlog: state.backlog,
+        finalizados: state.finalizados,
+        form:{
+          dataHora: byId("dataHora").value,
+          circuitoEsteira: byId("circuitoEsteira").value,
+          contatoAgendou: byId("contatoAgendou").value,
+          contatoValidara: byId("contatoValidara").value,
+          contatoLocal: byId("contatoLocal").value,
+          osModos: byId("osModos").value,
+          wf: byId("wf").value,
+          projeto: byId("projeto").value,
+          observacao: byId("observacao").value,
+          designacaoEsteira: byId("designacaoEsteira").value,
+          dadosDependencia: byId("dadosDependencia").value,
+          circuitoFinalizado: byId("circuitoFinalizado").value,
+          designacaoFinalizado: byId("designacaoFinalizado").value,
+          atividade: byId("atividade").value
+        }
+      };
+      localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    }
+    function loadLS(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(!raw) return;
+        const data = JSON.parse(raw);
+        const f = data.form || {};
+        byId("dataHora").value = f.dataHora || byId("dataHora").value;
+        byId("circuitoEsteira").value = f.circuitoEsteira || '';
+        byId("contatoAgendou").value = f.contatoAgendou || '';
+        byId("contatoValidara").value = f.contatoValidara || '';
+        byId("contatoLocal").value = f.contatoLocal || '';
+        byId("osModos").value = f.osModos || '';
+        byId("wf").value = f.wf || '';
+        byId("projeto").value = f.projeto || '1209/26 - PRO - BRADESCO-SDW_MIGR_OI';
+        byId("observacao").value = f.observacao || '';
+        byId("designacaoEsteira").value = f.designacaoEsteira || '';
+        byId("dadosDependencia").value = f.dadosDependencia || '';
+        byId("circuitoFinalizado").value = f.circuitoFinalizado || '';
+        byId("designacaoFinalizado").value = f.designacaoFinalizado || '';
+        byId("atividade").value = f.atividade || '';
+        if(Array.isArray(data.backlog)) state.backlog = data.backlog;
+        if(Array.isArray(data.finalizados)) state.finalizados = data.finalizados;
+        atualizarChips();
+        validarProcessar();
+      }catch(e){ console.warn("Falha ao carregar LS:", e); }
+    }
+    loadLS();
+
+    /* CSV Utils */
+    function deburr(s){ return String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase(); }
+    function getField(obj, cands){
+      if(!obj) return '';
+      const keys = Object.keys(obj);
+      for(const c of cands){ const k=keys.find(x=>x.toLowerCase()===c.toLowerCase()); if(k) return obj[k]; }
+      for(const c of cands){ const k=keys.find(x=>x.toLowerCase().includes(c.toLowerCase())); if(k) return obj[k]; }
+      return '';
+    }
+    function csvToJSON(csv){
+      const firstLine = csv.split(/\r?\n/)[0] || '';
+      const delim = firstLine.includes('\t') ? '\t' : (firstLine.includes(';') ? ';' : ',');
+      const pattern = new RegExp(`(?:^|${delim})("(?:[^"]|"")*"|[^${delim}\r\n]*)`, 'g');
+      const lines = csv.replace(/\r/g,'').split('\n').filter(l=>l.trim().length>0);
+      if(!lines.length) return [];
+      const headers=[]; (lines[0].match(pattern)||[]).forEach(m=>{ let v=m; if(v.startsWith(delim)) v=v.slice(1); v=v.trim(); if(v.startsWith('"')&&v.endsWith('"')) v=v.slice(1,-1).replace(/""/g,'"'); headers.push(v); });
+      const rows=[];
+      for(let i=1;i<lines.length;i++){
+        const cells=[]; (lines[i].match(pattern)||[]).forEach(m=>{ let v=m; if(v.startsWith(delim)) v=v.slice(1); v=v.trim(); if(v.startsWith('"')&&v.endsWith('"')) v=v.slice(1,-1).replace(/""/g,'"'); cells.push(v); });
+        const obj={}; headers.forEach((h,ix)=> obj[h] = (cells[ix]!==undefined?cells[ix]:'') ); rows.push(obj);
+      }
+      return rows;
+    }
+
+    /* Ações: abrir links + upload */
+    byId("btnAbrirBacklog").addEventListener('click', ()=> window.open(LINKS.backlog, '_blank'));
+    byId("btnAbrirFinal").addEventListener('click',   ()=> window.open(LINKS.final,  '_blank'));
+
+    const fileBacklog = byId("fileBacklog");
+    const fileFinal   = byId("fileFinalizados");
+    byId("btnPickBacklog").addEventListener('click', ()=> fileBacklog.click());
+    byId("btnPickFinalizados").addEventListener('click', ()=> fileFinal.click());
+
+    async function readFileAsText(file){
+      return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsText(file,'utf-8'); });
+    }
+    async function parseCSV(file){ const txt = await readFileAsText(file); return csvToJSON(txt); }
+
+    fileBacklog.addEventListener('change', async (e)=>{
+      const f = e.target.files?.[0]; if(!f) return;
+      byId("nameBacklog").textContent = f.name;
+      try{
+        state.backlog = await parseCSV(f);
+        toast(`Backlog carregado (${state.backlog.length} linhas).`);
+        atualizarChips(); validarProcessar(); saveLS();
+      }catch(err){ console.error(err); alert("Erro ao ler Backlog: " + err.message); }
+    });
+    fileFinal.addEventListener('change', async (e)=>{
+      const f = e.target.files?.[0]; if(!f) return;
+      byId("nameFinalizados").textContent = f.name;
+      try{
+        state.finalizados = await parseCSV(f);
+        toast(`Finalizados carregado (${state.finalizados.length} linhas).`);
+        atualizarChips(); validarProcessar(); saveLS();
+      }catch(err){ console.error(err); alert("Erro ao ler Finalizados: " + err.message); }
+    });
+
+    /* Botão Limpar */
+    byId("btnLimpar").addEventListener('click', ()=>{
+      setTimeout(()=>{
+        byId("designacaoEsteira").value = '';
+        byId("dadosDependencia").value = '';
+        byId("circuitoFinalizado").value = '';
+        byId("designacaoFinalizado").value = '';
+        byId("atividade").value = '';
+        byId("observacao").value = '';
+        byId("projeto").value = "1209/26 - PRO - BRADESCO-SDW_MIGR_OI";
+        clearFlags();
+        const d = new Date(); d.setSeconds(0,0); d.setMinutes(d.getMinutes() - (d.getMinutes()%5));
+        byId("dataHora").value = d.toISOString().slice(0,16);
+        validarProcessar();
+        saveLS();
+      },0);
+    });
+
+    /* Regras de negócio */
+    ['#circuitoEsteira','#osModos','#wf'].forEach(sel=>{
+      const el = $(sel);
+      el.addEventListener('input', ()=>{
+        const pos = el.selectionStart; el.value = el.value.replace(/[^\d]/g,'');
+        el.selectionStart = el.selectionEnd = pos; saveLS(); validarProcessar();
+      });
+    });
+
+    byId("circuitoEsteira").addEventListener('keydown', (ev)=>{
+      if(ev.key === 'Enter'){ ev.preventDefault(); byId("btnProcessar").click(); }
+    });
+
+    byId("btnProcessar").addEventListener('click', ()=>{
+      const circuito = byId("circuitoEsteira").value.trim();
+      if(!circuito){ alert("Informe o Circuito Esteira (somente números)."); return; }
+      if(!state.backlog.length || !state.finalizados.length){
+        alert("Carregue as duas bases (Backlog e Finalizados)."); return;
+      }
+      preencherDerivados(circuito);
+      saveLS();
+      toast("Processado.", 1500);
+    });
+
+    function clearFlags(){
+      ['designacaoEsteira','dadosDependencia','circuitoFinalizado','designacaoFinalizado','atividade']
+        .forEach(id => { byId(id).classList.remove('flag-ok','flag-warn','flag-err'); });
+    }
+    function setFlag(id, status){
+      const el = byId(id);
+      el.classList.remove('flag-ok','flag-warn','flag-err');
+      if(status==='ok') el.classList.add('flag-ok');
+      if(status==='warn') el.classList.add('flag-warn');
+      if(status==='err') el.classList.add('flag-err');
+    }
+
+    function preencherDerivados(circuitoEsteira){
+      clearFlags();
+      const bex = state.config;
+
+      // 1) Backlog por cod_cir (exato)
+      const rowBack = state.backlog.find(r => String(getField(r, bex.chaveBacklog)).trim() === circuitoEsteira );
+      if(!rowBack){
+        byId("designacaoEsteira").value = '';
+        byId("dadosDependencia").value = '';
+        byId("circuitoFinalizado").value = '';
+        byId("designacaoFinalizado").value = '';
+        byId("atividade").value = 'Ativação';
+        setFlag('designacaoEsteira','err');
+        setFlag('dadosDependencia','err');
+        setFlag('atividade','warn');
+        toast("Circuito Esteira não encontrado no Backlog.", 2800);
+        return;
+      }
+
+      // Designação + Dependência
+      const designacaoEsteira = getField(rowBack, bex.campoDesignacao);
+      const dependencia = getField(rowBack, bex.campoDependencia);
+      byId("designacaoEsteira").value = String(designacaoEsteira||'');
+      byId("dadosDependencia").value = String(dependencia||'');
+      setFlag('designacaoEsteira', designacaoEsteira ? 'ok' : 'warn');
+      setFlag('dadosDependencia', dependencia ? 'ok' : 'warn');
+
+      // Observação automática se servico == BANDA LARGA MÓVEL
+      const serv = String(getField(rowBack, bex.campoServico)||'');
+      if(serv && deburr(serv) === deburr('BANDA LARGA MÓVEL')){
+        if(!byId("observacao").value) byId("observacao").value = bex.textoBLM;
+      }
+
+      // 2) Finalizados: por dependência (normalizado) ou fallback por cod_cir
+      const depKey = deburr(dependencia);
+      let rowFin = null;
+      if(depKey){
+        rowFin = state.finalizados.find(r=>{
+          const depFin = String(getField(r, bex.campoDependenciaFinalizados)||'');
+          return depKey && deburr(depFin) === depKey;
+        }) || null;
+      }
+      if(!rowFin){
+        rowFin = state.finalizados.find(r => String(getField(r, bex.campoCodCirFinalizados)).trim() === circuitoEsteira ) || null;
+      }
+
+      if(rowFin){
+        byId("circuitoFinalizado").value = String(getField(rowFin, bex.campoCodCirFinalizados)||'');
+        byId("designacaoFinalizado").value = String(getField(rowFin, bex.campoDesignacaoFinalizados)||'');
+        setFlag('circuitoFinalizado','ok');
+        setFlag('designacaoFinalizado', byId("designacaoFinalizado").value ? 'ok' : 'warn');
+      }else{
+        byId("circuitoFinalizado").value = '';
+        byId("designacaoFinalizado").value = '';
+        setFlag('circuitoFinalizado','warn');
+        setFlag('designacaoFinalizado','warn');
+      }
+
+      // 3) Atividade
+      byId("atividade").value = byId("circuitoFinalizado").value ? "Migração Completa" : "Ativação";
+      setFlag('atividade','ok');
+    }
+
+    /* Copiar / Baixar Script */
+    function gerarScript(){
+      const dhEl = byId("dataHora").value;
+      const dh = dhEl ? new Date(dhEl).toLocaleString() : "";
+      const campos = {
+        "Data/Hora": dh,
+        "Projeto": byId("projeto").value,
+        "Circuito Esteira (cod_cir)": byId("circuitoEsteira").value,
+        "Designação Esteira": byId("designacaoEsteira").value,
+        "Dados da dependência": byId("dadosDependencia").value,
+        "Circuito Finalizado": byId("circuitoFinalizado").value,
+        "Designação Finalizado": byId("designacaoFinalizado").value,
+        "Atividade": byId("atividade").value,
+        "OS ModOS": byId("osModos").value,
+        "WF": byId("wf").value,
+        "Contato (Agendou)": byId("contatoAgendou").value,
+        "Contato (Validará)": byId("contatoValidara").value,
+        "Contato Local": byId("contatoLocal").value
+      };
+      const linhas = [
+        "=== ROTEIRO / SCRIPT DE ATIVIDADE ===",
+        ...Object.entries(campos).map(([k,v]) => `${k}: ${v||'-'}`),
+        "",
+        "Observação:",
+        (byId("observacao").value || "-"),
+        "====================================="
+      ];
+      return linhas.join("\n");
+    }
+
+    byId("btnCopiarScript").addEventListener('click', ()=>{
+      const script = gerarScript();
+      if(!script.trim()){ alert("Nada para copiar. Preencha e clique em Processar antes."); return; }
+      if (navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(script).then(()=>toast("Script copiado. Cole no e‑mail/WhatsApp/SGP."))
+          .catch(()=>fallbackCopy(script));
+      } else {
+        fallbackCopy(script);
+      }
+    });
+
+    byId("btnBaixarScript").addEventListener('click', ()=>{
+      const script = gerarScript();
+      if(!script.trim()){ alert("Nada para baixar. Preencha e clique em Processar antes."); return; }
+      baixarArquivo(script, `script_${byId("circuitoEsteira").value||'atividade'}.txt`, 'text/plain;charset=utf-8');
+    });
+
+    function fallbackCopy(texto){
+      const ta = document.createElement('textarea');
+      ta.value = texto; document.body.appendChild(ta);
+      ta.select(); try{ document.execCommand('copy'); toast("Script copiado."); }catch(e){ alert("Falha ao copiar."); }
+      document.body.removeChild(ta);
+    }
+
+    /* Exportar Conciliação (.csv) */
+    byId("btnExportarCSV").addEventListener('click', ()=>{
+      // valida se já processou (tem pelo menos designação/atividade definidos)
+      const linha = {
+        data_hora: byId("dataHora").value,
+        projeto: byId("projeto").value,
+        cod_cir: byId("circuitoEsteira").value,
+        designacao_esteira: byId("designacaoEsteira").value,
+        dados_dependencia: byId("dadosDependencia").value,
+        cod_cir_finalizado: byId("circuitoFinalizado").value,
+        designacao_finalizado: byId("designacaoFinalizado").value,
+        atividade: byId("atividade").value,
+        os_modos: byId("osModos").value,
+        wf: byId("wf").value,
+        contato_agendou: byId("contatoAgendou").value,
+        contato_validara: byId("contatoValidara").value,
+        contato_local: byId("contatoLocal").value,
+        observacao: (byId("observacao").value||"").replace(/\r?\n/g,' ')
+      };
+      const headers = Object.keys(linha).join(';');
+      const valores = Object.values(linha).map(v => `"${String(v??'').replace(/"/g,'""')}"`).join(';');
+      const csv = headers + "\n" + valores + "\n";
+      baixarArquivo(csv, `conciliação_${linha.cod_cir||'atividade'}.csv`, 'text/csv;charset=utf-8');
+    });
+
+    /* Baixar Modelo CSV (opcional) */
+    byId("btnBaixarModelo").addEventListener('click', ()=>{
+      const modeloBacklog =
+`cod_cir;designacao;projeto_nome_dependencia_cliente;servico
+123456;DESIG_ABC;AGÊNCIA EXEMPLO;BANDA LARGA MÓVEL`;
+      const modeloFinal =
+`cod_cir;designacao;projeto_nome_dependencia_cliente
+123456;DESIG_ABC;AGÊNCIA EXEMPLO`;
+      const zipLike =
+`# BACKLOG.csv
+${modeloBacklog}
+
+# FINALIZADOS.csv
+${modeloFinal}
+`;
+      baixarArquivo(zipLike, 'modelos_backlog_finalizados.txt', 'text/plain;charset=utf-8');
+    });
+
+    /* Helpers: chip/validação/baixar */
+    function atualizarChips(){
+      byId("chipBacklog").textContent = `Backlog: ${state.backlog.length} linhas`;
+      byId("chipFinal").textContent   = `Finalizados: ${state.finalizados.length} linhas`;
+    }
+    function validarProcessar(){
+      const temBases = state.backlog.length>0 && state.finalizados.length>0;
+      const cir = byId("circuitoEsteira").value.trim();
+      const numOK = /^\d+$/.test(cir);
+      byId("btnProcessar").disabled = !(temBases && numOK);
+    }
+    function baixarArquivo(conteudo, nome, mime){
+      try{
+        const blob = new Blob([conteudo], { type: mime || 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = nome || 'arquivo.txt';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        toast(`Baixado: ${nome}`);
+      }catch(err){
+        console.error(err);
+        alert("Falha ao gerar arquivo para download.");
+      }
+    }
+  </script>
+</body>
+</html>
